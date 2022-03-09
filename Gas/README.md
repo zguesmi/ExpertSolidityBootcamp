@@ -1,12 +1,10 @@
 # Optimisation Game Instructions
 
-1. Use gitpod to create a workspace
-   https://github.com/ExtropyIO/Academy
-2. Open a terminal go to the GasOptimisation directory
-3. Run ` npm i` to install the dependencies
-4. Run ` npx hardhat test` to run the tests and get a gas usage report
+1. Open a terminal go to the Gas directory
+2. Run ` npm i` to install the dependencies
+3. Run ` npx hardhat test` to run the tests and get a gas usage report
 
-![](https://i.imgur.com/sXcfvEj.png)
+![](https://imgur.com/a/q3RjSjw)
 
 The aim of the game is to reduce the Average figures for contract deployment and transfer and updatePayment functions as much as possible.
 
