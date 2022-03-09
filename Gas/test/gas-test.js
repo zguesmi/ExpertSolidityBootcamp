@@ -149,7 +149,9 @@ describe("Gas1", function () {
       let wallet = ethers.Wallet.createRandom();
       addrArray1.push(wallet.address);
     }
-    addrArray1.push(addr1.address);
+
+    let tx0 = await gasContract.addToWhitelist(addr1.address, 1);
+    await tx0.wait();
     addrArray1.forEach(async (element) => {
       let tx1 = await gasContract.addToWhitelist(element, 1);
       await tx1.wait();
