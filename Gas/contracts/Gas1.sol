@@ -42,7 +42,7 @@ contract GasContract is Ownable {
     event AddedToWhitelist(address userAddress, uint256 tier);
 
     modifier onlyAdminOrOwner() {
-        require(msg.sender == contractOwner || checkForAdmin(msg.sender), "onlyAdminOrOwner");
+        require(msg.sender == contractOwner || isAdmin(msg.sender), "onlyAdminOrOwner");
         _;
     }
 
@@ -77,7 +77,7 @@ contract GasContract is Ownable {
         }
     }
 
-    function checkForAdmin(address _user) public view returns (bool) {
+    function isAdmin(address _user) public view returns (bool) {
         for (uint256 i = 0; i < administrators.length; i++) {
             if (administrators[i] == _user) {
                 return true;
