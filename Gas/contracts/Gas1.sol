@@ -85,14 +85,11 @@ contract GasContract is Ownable {
     }
 
     function getPayments(address _user)
-        public
+        external
         view
         returns (Payment[] memory payments_)
     {
-        require(
-            _user != address(0),
-            "Gas Contract - getPayments function - User must have a valid non zero address"
-        );
+        require(_user != address(0), "noZeroes");
         return payments[_user];
     }
 
