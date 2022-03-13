@@ -21,7 +21,6 @@ contract GasContract is Ownable {
 
     mapping(address => uint256) public balances;
     mapping(address => Payment[]) public payments;
-    History[] public paymentHistory; // when a payment was updated
     mapping(address => uint256) public whitelist;
 
     struct Payment {
@@ -78,21 +77,13 @@ contract GasContract is Ownable {
         }
     }
 
-    function getPaymentHistory()
-        public
-        returns (History[] memory paymentHistory_)
-    {
-        return paymentHistory;
-    }
-
-    function checkForAdmin(address _user) public view returns (bool admin_) {
-        bool admin = false;
-        for (uint256 ii = 0; ii < administrators.length; ii++) {
-            if (administrators[ii] == _user) {
-                admin = true;
+    function checkForAdmin(address _user) public view returns (bool) {
+        for (uint256 i = 0; i < administrators.length; i++) {
+            if (administrators[i] == _user) {
+                return true;
             }
         }
-        return admin;
+        return false;
     }
 
     function balanceOf(address _user) external view returns (uint256 balance_) {
@@ -111,7 +102,6 @@ contract GasContract is Ownable {
         history.blockNumber = block.number;
         history.lastUpdate = block.timestamp;
         history.updatedBy = _updateAddress;
-        paymentHistory.push(history);
         bool[] memory status = new bool[](tradePercent);
         for (uint256 i = 0; i < tradePercent; i++) {
             status[i] = true;
