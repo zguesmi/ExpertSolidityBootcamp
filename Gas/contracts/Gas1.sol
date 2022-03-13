@@ -6,7 +6,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract GasContract is Ownable {
     uint256 public totalSupply; // cannot be updated
     uint256 public paymentCounter;
-    uint256 public tradePercent = 12;
     address public contractOwner;
     uint256 public tradeMode;
     address[5] public administrators;
@@ -34,7 +33,7 @@ contract GasContract is Ownable {
     }
 
     modifier onlyAdminOrOwner() {
-        require(msg.sender == contractOwner || isAdmin(msg.sender), "onlyAdminOrOwner");
+        require(msg.sender == contractOwner || isAdmin(msg.sender), "E1");
         _;
     }
 
@@ -89,7 +88,7 @@ contract GasContract is Ownable {
         view
         returns (Payment[] memory payments_)
     {
-        require(_user != address(0), "noZeroes");
+        require(_user != address(0), "E2");
         return payments[_user];
     }
 
@@ -98,17 +97,14 @@ contract GasContract is Ownable {
         uint256 _amount,
         string calldata _name
     ) public returns (bool status_) {
-        require(
-            balances[msg.sender] >= _amount,
-            "Gas Contract - Transfer function - Sender has insufficient Balance"
-        );
-        require(
-            bytes(_name).length < 9,
-            "Gas Contract - Transfer function -  The recipient name is too long, there is a max length of 8 characters"
-        );
+        // Check sender's balance
+        require(balances[msg.sender] >= _amount, "E3");
+        // Max length of the recipient name is 8 characters
+        require(bytes(_name).length < 9, "E4");
         balances[msg.sender] -= _amount;
         balances[_recipient] += _amount;
         emit Transfer(_recipient, _amount);
+        // Add payment to address
         Payment memory payment;
         payment.admin = address(0);
         payment.adminUpdated = false;
@@ -118,11 +114,7 @@ contract GasContract is Ownable {
         payment.recipientName = _name;
         payment.paymentID = ++paymentCounter;
         payments[msg.sender].push(payment);
-        bool[] memory status = new bool[](tradePercent);
-        for (uint256 i = 0; i < tradePercent; i++) {
-            status[i] = true;
-        }
-        return (status[0] == true);
+        status_ = true;
     }
 
     function updatePayment(
