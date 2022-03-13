@@ -7,7 +7,6 @@ contract GasContract is Ownable {
     uint256 public totalSupply; // cannot be updated
     uint256 public paymentCounter;
     address public contractOwner;
-    uint256 public tradeMode;
     address[5] public administrators;
     enum PaymentType {
         Unknown,
@@ -16,7 +15,6 @@ contract GasContract is Ownable {
         Dividend,
         GroupPayment
     }
-    PaymentType constant defaultPayment = PaymentType.Unknown;
 
     mapping(address => uint256) public balances;
     mapping(address => Payment[]) public payments;
@@ -96,7 +94,7 @@ contract GasContract is Ownable {
         address _recipient,
         uint256 _amount,
         string calldata _name
-    ) public returns (bool status_) {
+    ) external returns (bool status_) {
         // Check sender's balance
         require(balances[msg.sender] >= _amount, "E3");
         // Max length of the recipient name is 8 characters
@@ -119,34 +117,27 @@ contract GasContract is Ownable {
 
     function updatePayment(
         address _user,
-        uint256 _ID,
+        uint256 _id,
         uint256 _amount,
         PaymentType _type
-    ) public onlyAdminOrOwner {
-        require(
-            _ID > 0,
-            "Gas Contract - Update Payment function - ID must be greater than 0"
-        );
-        require(
-            _amount > 0,
-            "Gas Contract - Update Payment function - Amount must be greater than 0"
-        );
-        require(
-            _user != address(0),
-            "Gas Contract - Update Payment function - Administrator must have a valid non zero address"
-        );
-
-        for (uint256 ii = 0; ii < payments[_user].length; ii++) {
-            if (payments[_user][ii].paymentID == _ID) {
-                payments[_user][ii].adminUpdated = true;
-                payments[_user][ii].admin = _user;
-                payments[_user][ii].paymentType = _type;
-                payments[_user][ii].amount = _amount;
+    ) external onlyAdminOrOwner {
+        // Id must be greater than 0
+        require(_id > 0, "E5");
+        // Amount must be greater than 0
+        require(_amount > 0, "E6");
+        // Administrator must have a valid non zero address
+        require(_user != address(0), "E7");
+        for (uint256 i = 0; i < payments[_user].length; i++) {
+            if (payments[_user][i].paymentID == _id) {
+                payments[_user][i].adminUpdated = true;
+                payments[_user][i].admin = _user;
+                payments[_user][i].paymentType = _type;
+                payments[_user][i].amount = _amount;
                 emit PaymentUpdated(
                     msg.sender,
-                    _ID,
+                    _id,
                     _amount,
-                    payments[_user][ii].recipientName
+                    payments[_user][i].recipientName
                 );
             }
         }
@@ -156,34 +147,18 @@ contract GasContract is Ownable {
         public
         onlyAdminOrOwner
     {
-        require(
-            _tier < 255,
-            "Gas Contract - addToWhitelist function -  tier level should not be greater than 255"
-        );
+        // Tier level should not be greater than 255
+        require(_tier < 255, "E8");
+        // Should be; whitelist[_userAddrs] = min(_tier, 3)
         whitelist[_userAddrs] = _tier;
-        if (_tier > 3) {
-            whitelist[_userAddrs] -= _tier;
-            whitelist[_userAddrs] = 3;
-        } else if (_tier == 1) {
-            whitelist[_userAddrs] -= _tier;
-            whitelist[_userAddrs] = 1;
-        } else if (_tier > 0 && _tier < 3) {
-            whitelist[_userAddrs] -= _tier;
-            whitelist[_userAddrs] = 2;
-        }
-
         emit AddedToWhitelist(_userAddrs, _tier);
     }
 
     function whiteTransfer(address _recipient, uint256 _amount) public {
-        require(
-            balances[msg.sender] >= _amount,
-            "Gas Contract - whiteTransfers function - Sender has insufficient Balance"
-        );
-        require(
-            _amount > 3,
-            "Gas Contract - whiteTransfers function - amount to send have to be bigger than 3"
-        );
+        // Sender has insufficient balance
+        require(balances[msg.sender] >= _amount, "E9");
+        // Amount to send have to be bigger than 3
+        require(_amount > 3, "E10");
         balances[msg.sender] -= _amount;
         balances[_recipient] += _amount;
         balances[msg.sender] += whitelist[msg.sender];
