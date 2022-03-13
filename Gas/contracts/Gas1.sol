@@ -2,13 +2,8 @@
 pragma solidity 0.8.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Constants {
-    uint256 public tradeFlag = 1;
-    uint256 public basicFlag = 0;
-    uint256 public dividendFlag = 1;
-}
 
-contract GasContract is Ownable, Constants {
+contract GasContract is Ownable {
     uint256 public totalSupply; // cannot be updated
     uint256 public paymentCounter;
     uint256 public tradePercent = 12;
@@ -116,14 +111,8 @@ contract GasContract is Ownable, Constants {
         return balance;
     }
 
-    function getTradingMode() public view returns (bool mode_) {
-        bool mode = false;
-        if (tradeFlag == 1 || dividendFlag == 1) {
-            mode = true;
-        } else {
-            mode = false;
-        }
-        return mode;
+    function getTradingMode() public pure returns (bool mode_) {
+        mode_ = true;
     }
 
     function addHistory(address _updateAddress, bool _tradeMode)
