@@ -33,19 +33,12 @@ contract GasContract is Ownable {
         uint256 amount;
     }
 
-    struct History {
-        uint256 lastUpdate;
-        address updatedBy;
-        uint256 blockNumber;
-    }
-
-    event AddedToWhitelist(address userAddress, uint256 tier);
-
     modifier onlyAdminOrOwner() {
         require(msg.sender == contractOwner || isAdmin(msg.sender), "onlyAdminOrOwner");
         _;
     }
 
+    event AddedToWhitelist(address userAddress, uint256 tier);
     event supplyChanged(address indexed, uint256 indexed);
     event Transfer(address recipient, uint256 amount);
     event PaymentUpdated(
@@ -89,21 +82,6 @@ contract GasContract is Ownable {
 
     function getTradingMode() public pure returns (bool mode_) {
         mode_ = true;
-    }
-
-    function addHistory(address _updateAddress, bool _tradeMode)
-        public
-        returns (bool status_, bool tradeMode_)
-    {
-        History memory history;
-        history.blockNumber = block.number;
-        history.lastUpdate = block.timestamp;
-        history.updatedBy = _updateAddress;
-        bool[] memory status = new bool[](tradePercent);
-        for (uint256 i = 0; i < tradePercent; i++) {
-            status[i] = true;
-        }
-        return ((status[0] == true), _tradeMode);
     }
 
     function getPayments(address _user)
@@ -176,7 +154,6 @@ contract GasContract is Ownable {
                 payments[_user][ii].paymentType = _type;
                 payments[_user][ii].amount = _amount;
                 bool tradingMode = getTradingMode();
-                addHistory(_user, tradingMode);
                 emit PaymentUpdated(
                     msg.sender,
                     _ID,
