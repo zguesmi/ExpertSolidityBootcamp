@@ -95,9 +95,8 @@ contract GasContract is Ownable {
         return admin;
     }
 
-    function balanceOf(address _user) public view returns (uint256 balance_) {
-        uint256 balance = balances[_user];
-        return balance;
+    function balanceOf(address _user) external view returns (uint256 balance_) {
+        balance_ = balances[_user];
     }
 
     function getTradingMode() public pure returns (bool mode_) {
