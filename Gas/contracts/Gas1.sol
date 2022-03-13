@@ -80,7 +80,7 @@ contract GasContract is Ownable {
         balance_ = balances[_user];
     }
 
-    function getTradingMode() public pure returns (bool mode_) {
+    function getTradingMode() external pure returns (bool mode_) {
         mode_ = true;
     }
 
@@ -153,7 +153,6 @@ contract GasContract is Ownable {
                 payments[_user][ii].admin = _user;
                 payments[_user][ii].paymentType = _type;
                 payments[_user][ii].amount = _amount;
-                bool tradingMode = getTradingMode();
                 emit PaymentUpdated(
                     msg.sender,
                     _ID,
